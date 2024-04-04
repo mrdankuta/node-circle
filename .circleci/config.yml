@@ -18,10 +18,10 @@ jobs:
           command: |
             docker build -t $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1 -f nodeapp/Dockerfile .
             docker push $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1
-      - aws-ecs/update-service:
+      - aws-ecs/update_service:
           family: makinode-app-task
           cluster: makinode-app-cluster
-          container-image-name-updates: container=${DOCKER_HUB_USERNAME}/makinode-app-circle,tag=$CIRCLE_SHA1
+          container_image_name_updates: container=${DOCKER_HUB_USERNAME}/makinode-app-circle,tag=$CIRCLE_SHA1
 
 workflows:
   build-and-deploy:
