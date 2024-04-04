@@ -16,6 +16,7 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
+            echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
             docker build -t $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1 -f nodeapp/Dockerfile .
             docker push $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1
       - aws-ecs/update_service:
