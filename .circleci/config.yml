@@ -2,10 +2,10 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.1.3
-  aws-ecs: circleci/aws-ecs@4.0.0
+  # aws-ecs: circleci/aws-ecs@4.0.0
 
 jobs:
-  build-push-deploy:
+  build-push:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -19,13 +19,13 @@ jobs:
             echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
             docker build -t $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1 -f nodeapp/Dockerfile .
             docker push $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1
-      - aws-ecs/update_service:
-          family: makinode-app-task
-          cluster: makinode-app-cluster
-          container_image_name_updates: container=${DOCKER_HUB_USERNAME}/makinode-app-circle,tag=$CIRCLE_SHA1
+      # - aws-ecs/update_service:
+      #     family: makinode-app-task
+      #     cluster: makinode-app-cluster
+      #     container_image_name_updates: container=${DOCKER_HUB_USERNAME}/makinode-app-circle,tag=$CIRCLE_SHA1
 
 workflows:
-  build-and-deploy:
+  build-and-push:
     jobs:
-      - build-push-deploy:
+      - build-push:
           context: aws-docker-context
