@@ -74,18 +74,18 @@ jobs:
       # - aws-ecs/update_task_definition_from_json:
       #     task_definition_json: updated-task-definition.json
 
-      - aws-ecs/update_service:
-          family: $ECS_TASK_DEFINITION_FAMILY
-          cluster: $ECS_CLUSTER_NAME
-          container_image_name_updates: container="$CONTAINER_NAME, tag=$CIRCLE_SHA1"
-          # "container=$CONTAINER_NAME,tag=$CIRCLE_SHA1"
+      # - aws-ecs/update_service:
+      #     family: $ECS_TASK_DEFINITION_FAMILY
+      #     cluster: $ECS_CLUSTER_NAME
+      #     container_image_name_updates: container="$CONTAINER_NAME, tag=$CIRCLE_SHA1"
+      #     # "container=$CONTAINER_NAME,tag=$CIRCLE_SHA1"
 
-      # - run:
-      #     name: Update ECS Service
-      #     command: |
-      #       # Update the ECS service with the new task definition
-      #       aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --task-definition $ECS_TASK_DEFINITION_FAMILY
-      #       aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME
+      - run:
+          name: Update ECS Service
+          command: |
+            # Update the ECS service with the new task definition
+            aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --task-definition $ECS_TASK_DEFINITION_FAMILY
+            aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME
 
 
 workflows:
