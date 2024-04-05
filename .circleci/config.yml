@@ -10,7 +10,8 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - aws-cli/setup
+      - aws-cli/setup:
+          region: us-east-1
       - run:
           name: Build and push Docker image
           command: |
