@@ -55,7 +55,7 @@ jobs:
           name: Update ECS Task Definition
           command: |
             # Download the current task definition
-            aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY --output-format json > task-definition.json
+            aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY --query 'taskDefinition' > task-definition.json
 
             # Extract the container name
             CONTAINER_NAME=$(jq -r '.containerDefinitions[0].name' task-definition.json)
@@ -68,7 +68,7 @@ jobs:
             # Register the updated task definition
             aws ecs register-task-definition \
               --family $ECS_TASK_DEFINITION_FAMILY \
-              --container-definitions file://updated-task-definition.json \
+              --cli-input-json file://updated-task-definition.json \
               --output text \
               --query 'taskDefinition.taskDefinitionArn' > task-definition-arn.txt
 
