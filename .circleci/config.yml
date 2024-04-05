@@ -54,7 +54,8 @@ jobs:
       - aws-ecs/update_service:
           family: $ECS_TASK_DEFINITION_FAMILY
           cluster: $ECS_CLUSTER_NAME
-          container_image_name_updates: $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1
+          container_image_name_updates: container="$DOCKER_HUB_USERNAME/makinode-app-circle, tag=$CIRCLE_SHA1"
+          # "container=$CONTAINER_NAME,tag=$CIRCLE_SHA1"
 
       # - run:
       #     name: Update ECS Service
