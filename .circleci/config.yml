@@ -23,11 +23,13 @@ jobs:
           name: Update ECS Task Definition
           command: |
             # Download the current task definition
-            aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY --query taskDefinition > task-definition.json
+            # aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY --query taskDefinition > task-definition.json
+            TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY)
 
             # Update the container image in the task definition
-            jq --arg CONTAINER_IMAGE "$DOCKER_HUB_USERNAME/$makinode-app-circle:$CIRCLE_SHA1" \
-               '.containerDefinitions[0].image = $CONTAINER_IMAGE' task-definition.json > updated-task-definition.json
+            # jq --arg CONTAINER_IMAGE "$DOCKER_HUB_USERNAME/$makinode-app-circle:$CIRCLE_SHA1" \
+            #    '.containerDefinitions[0].image = $CONTAINER_IMAGE' task-definition.json > updated-task-definition.json
+            echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"' > updated-task-definition.json
 
             # Register the updated task definition
             aws ecs register-task-definition --family $ECS_TASK_DEFINITION_FAMILY --cli-input-json file://updated-task-definition.json
