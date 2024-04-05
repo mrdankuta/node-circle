@@ -73,7 +73,6 @@ jobs:
 
       - aws-ecs/update_task_definition_from_json:
           task_definition_json: updated-task-definition.json
-          rule_name: $ECS_TASK_DEFINITION_FAMILY
 
       - aws-ecs/update_service:
           family: $ECS_TASK_DEFINITION_FAMILY
