@@ -16,6 +16,26 @@ jobs:
           command: |
             docker build -t $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1 -f nodeapp/Dockerfile .
             docker push $DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1
+      - run:
+          name: Update ECS Task Definition
+          command: |
+            # Download the current task definition
+            aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY --query taskDefinition > task-definition.json
+
+            # Update the container image in the task definition
+            jq --arg CONTAINER_IMAGE "$DOCKER_HUB_USERNAME/$makinode-app-circle:$CIRCLE_SHA1" \
+               '.containerDefinitions[0].image = $CONTAINER_IMAGE' task-definition.json > updated-task-definition.json
+
+            # Register the updated task definition
+            aws ecs register-task-definition --cli-input-json file://updated-task-definition.json
+
+      - run:
+          name: Update ECS Service
+          command: |
+            # Update the ECS service with the new task definition
+            aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --task-definition $ECS_TASK_DEFINITION_FAMILY
+            aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME
+
 
 workflows:
   build-and-deploy:
