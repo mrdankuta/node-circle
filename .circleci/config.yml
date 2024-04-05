@@ -68,7 +68,6 @@ jobs:
             aws ecs register-task-definition \
               --family $ECS_TASK_DEFINITION_FAMILY \
               --container-definitions file://updated-task-definition.json \
-              # --output-format json | jq -r '.taskDefinition.taskDefinitionArn' > task-definition-arn.txt
               --output text \
               --query 'taskDefinition.taskDefinitionArn' > task-definition-arn.txt
 
