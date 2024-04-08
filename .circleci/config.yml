@@ -28,7 +28,7 @@ jobs:
           command: |
             # Get the latest revision of the task definition
             # LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
-            LATEST_REVISION=$(aws ecs list-task-definitions --family makinode-app-task --sort DESC --max-items 1 | jq -r '.taskDefinitionArns[0]')
+            LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 | jq -r '.taskDefinitionArns[0]')
 
             # Download the current task definition
             TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
