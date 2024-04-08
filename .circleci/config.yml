@@ -34,6 +34,7 @@ jobs:
 
             # Update the container image in the task definition
             echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"' > updated-task-definition.json
+            cat updated-task-definition.json
 
             # Register the updated task definition
             aws ecs register-task-definition --cli-input-json file://updated-task-definition.json
