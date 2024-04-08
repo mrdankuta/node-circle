@@ -71,8 +71,11 @@ jobs:
       - run:
           name: Update ECS Service
           command: |
+            # Get the task definition ARN
+            TASK_DEFINITION_ARN=$(echo $NEW_TASK_DEFINITION | jq -r '.taskDefinition.taskDefinitionArn')
+
             # Update the ECS service with the new task definition
-            aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $NEW_TASK_DEFINITION
+            aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $TASK_DEFINITION_ARN
             aws ecs wait services-stable --cluster makinode-app-cluster --services makinode-app-service
 
 workflows:
