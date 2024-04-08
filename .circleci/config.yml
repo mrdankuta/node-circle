@@ -42,7 +42,7 @@ jobs:
             # aws ecs register-task-definition --cli-input-json file://updated-task-definition.json --family $TASK_DEFINITION_FAMILY
 
             # Download the current task definition
-              TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
+            TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
             
             # Extract the task definition family name
             TASK_DEFINITION_FAMILY=$(echo $TASK_DEFINITION | jq -r '.family')
