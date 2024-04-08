@@ -41,15 +41,15 @@ jobs:
             # Create the updated task definition JSON
             NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{
               "family": "$TASK_DEFINITION_FAMILY",
-              "taskRoleArn": .taskRoleArn // "",
-              "executionRoleArn": .executionRoleArn // "",
-              "networkMode": .networkMode // "awsvpc",
+              "taskRoleArn": ($TASK_DEFINITION.taskRoleArn // ""),
+              "executionRoleArn": ($TASK_DEFINITION.executionRoleArn // ""),
+              "networkMode": ($TASK_DEFINITION.networkMode // "awsvpc"),
               "containerDefinitions": $updated_container_def,
-              "volumes": .volumes // [],
-              "placementConstraints": .placementConstraints // [],
-              "requiresCompatibilities": .requiresCompatibilities // ["FARGATE"],
-              "cpu": (.cpu // "256") | tostring,
-              "memory": (.memory // "512") | tostring
+              "volumes": ($TASK_DEFINITION.volumes // []),
+              "placementConstraints": ($TASK_DEFINITION.placementConstraints // []),
+              "requiresCompatibilities": ($TASK_DEFINITION.requiresCompatibilities // ["FARGATE"]),
+              "cpu": (($TASK_DEFINITION.cpu // "256") | tostring),
+              "memory": (($TASK_DEFINITION.memory // "512") | tostring)
             }')
 
             # Register the updated task definition
