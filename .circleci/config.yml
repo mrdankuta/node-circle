@@ -72,7 +72,7 @@ jobs:
           name: Update ECS Service
           command: |
             # Update the ECS service with the new task definition
-            aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $LATEST_REVISION
+            aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $NEW_TASK_DEFINITION
             aws ecs wait services-stable --cluster makinode-app-cluster --services makinode-app-service
 
 workflows:
