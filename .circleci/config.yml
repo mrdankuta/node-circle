@@ -60,7 +60,7 @@ jobs:
           name: Update ECS Task Definition
           command: |
             # Download the current task definition
-            TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION_FAMILY)
+            TASK_DEFINITION=$(aws ecs describe-task-definition --family $ECS_TASK_DEFINITION_FAMILY)
 
             # Update the container image in the task definition
             echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"' > updated-task-definition.json
@@ -73,7 +73,7 @@ jobs:
           name: Update ECS Service
           command: |
             # Update the ECS service with the new task definition
-            aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --task-definition $ECS_TASK_DEFINITION_FAMILY
+            aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --family $ECS_TASK_DEFINITION_FAMILY
             aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME
 
 workflows:
