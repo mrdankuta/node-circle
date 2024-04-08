@@ -33,12 +33,15 @@ jobs:
             # Download the current task definition
             TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
 
+            # Extract the task definition family name
+            TASK_DEFINITION_FAMILY=$(echo $TASK_DEFINITION | jq -r '.family')
+
             # Update the container image in the task definition
             echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"' > updated-task-definition.json
             cat updated-task-definition.json
 
             # Register the updated task definition
-            aws ecs register-task-definition --cli-input-json file://updated-task-definition.json
+            aws ecs register-task-definition --cli-input-json file://updated-task-definition.json --family $TASK_DEFINITION_FAMILY
 
       # Update ECS Service
       - run:
