@@ -27,19 +27,7 @@ jobs:
           name: Update ECS Task Definition
           command: |
             # Get the latest revision of the task definition
-            # LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
             LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 | jq -r '.taskDefinitionArns[0]')
-
-            # Download the current task definition
-            # TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
-
-
-            # # Update the container image in the task definition
-            # echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"' > updated-task-definition.json
-            # cat updated-task-definition.json
-
-            # # Register the updated task definition
-            # aws ecs register-task-definition --cli-input-json file://updated-task-definition.json --family $TASK_DEFINITION_FAMILY
 
             # Download the current task definition
             TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
@@ -48,25 +36,24 @@ jobs:
             TASK_DEFINITION_FAMILY=$(echo $TASK_DEFINITION | jq -r '.family')
 
             # Update the container image in the task definition
-            UPDATED_CONTAINER_DEF=$(echo $TASK_DEFINITION | jq '.containerDefinitions[0].image = "'$DOCKER_HUB_USERNAME'/makinode-app-circle:'$CIRCLE_SHA1'"')
+            UPDATED_CONTAINER_DEF=$(echo $TASK_DEFINITION | jq --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '.containerDefinitions[0].image = $image')
 
             # Create the updated task definition JSON
-            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '.containerDefinitions = $updated_container_def')
-            # NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{ 
-            #   "family": $TASK_DEFINITION_FAMILY,
-            #   "taskRoleArn": .taskRoleArn,
-            #   "executionRoleArn": .executionRoleArn,
-            #   "networkMode": .networkMode,
-            #   "containerDefinitions": $updated_container_def,
-            #   "volumes": .volumes,
-            #   "placementConstraints": .placementConstraints,
-            #   "requiresCompatibilities": .requiresCompatibilities,
-            #   "cpu": .cpu,
-            #   "memory": .memory
-            # }')
+            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{ 
+              "family": $TASK_DEFINITION_FAMILY,
+              "taskRoleArn": .taskRoleArn,
+              "executionRoleArn": .executionRoleArn,
+              "networkMode": .networkMode,
+              "containerDefinitions": $updated_container_def,
+              "volumes": .volumes,
+              "placementConstraints": .placementConstraints,
+              "requiresCompatibilities": .requiresCompatibilities,
+              "cpu": .cpu,
+              "memory": .memory
+            }')
 
             # Register the updated task definition
-            aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEFINITION" --family $TASK_DEFINITION_FAMILY
+            aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEFINITION"
 
       # Update ECS Service
       - run:
