@@ -39,12 +39,24 @@ jobs:
             UPDATED_CONTAINER_DEF=$(echo $TASK_DEFINITION | jq --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '.containerDefinitions[0].image = $image')
 
             # Create the updated task definition JSON
-            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson task_definition "$TASK_DEFINITION" --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{
+            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson task_definition "$TASK_DEFINITION" --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '{
               "family": "$TASK_DEFINITION_FAMILY",
               "taskRoleArn": ($task_definition.taskRoleArn // ""),
               "executionRoleArn": ($task_definition.executionRoleArn // ""),
               "networkMode": ($task_definition.networkMode // "awsvpc"),
-              "containerDefinitions": $updated_container_def,
+              "containerDefinitions": [
+                {
+                  "image": $image,
+                  "name": ($task_definition.containerDefinitions[0].name // "makinode-app-container"),
+                  "cpu": ($task_definition.containerDefinitions[0].cpu // 0),
+                  "portMappings": ($task_definition.containerDefinitions[0].portMappings // []),
+                  "essential": ($task_definition.containerDefinitions[0].essential // true),
+                  "environment": ($task_definition.containerDefinitions[0].environment // []),
+                  "mountPoints": ($task_definition.containerDefinitions[0].mountPoints // []),
+                  "volumesFrom": ($task_definition.containerDefinitions[0].volumesFrom // []),
+                  "systemControls": ($task_definition.containerDefinitions[0].systemControls // [])
+                }
+              ],
               "volumes": ($task_definition.volumes // []),
               "placementConstraints": ($task_definition.placementConstraints // []),
               "requiresCompatibilities": ($task_definition.requiresCompatibilities // ["FARGATE"]),
