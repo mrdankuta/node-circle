@@ -39,17 +39,17 @@ jobs:
             UPDATED_CONTAINER_DEF=$(echo $TASK_DEFINITION | jq --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '.containerDefinitions[0].image = $image')
 
             # Create the updated task definition JSON
-            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{
+            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson task_definition "$TASK_DEFINITION" --argjson updated_container_def "$UPDATED_CONTAINER_DEF" '{
               "family": "$TASK_DEFINITION_FAMILY",
-              "taskRoleArn": ($TASK_DEFINITION.taskRoleArn // ""),
-              "executionRoleArn": ($TASK_DEFINITION.executionRoleArn // ""),
-              "networkMode": ($TASK_DEFINITION.networkMode // "awsvpc"),
+              "taskRoleArn": ($task_definition.taskRoleArn // ""),
+              "executionRoleArn": ($task_definition.executionRoleArn // ""),
+              "networkMode": ($task_definition.networkMode // "awsvpc"),
               "containerDefinitions": $updated_container_def,
-              "volumes": ($TASK_DEFINITION.volumes // []),
-              "placementConstraints": ($TASK_DEFINITION.placementConstraints // []),
-              "requiresCompatibilities": ($TASK_DEFINITION.requiresCompatibilities // ["FARGATE"]),
-              "cpu": (($TASK_DEFINITION.cpu // "256") | tostring),
-              "memory": (($TASK_DEFINITION.memory // "512") | tostring)
+              "volumes": ($task_definition.volumes // []),
+              "placementConstraints": ($task_definition.placementConstraints // []),
+              "requiresCompatibilities": ($task_definition.requiresCompatibilities // ["FARGATE"]),
+              "cpu": (($task_definition.cpu // "256") | tostring),
+              "memory": (($task_definition.memory // "512") | tostring)
             }')
 
             # Register the updated task definition
