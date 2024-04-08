@@ -39,8 +39,8 @@ jobs:
             UPDATED_CONTAINER_DEF=$(echo $TASK_DEFINITION | jq --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '.containerDefinitions[0].image = $image')
 
             # Create the updated task definition JSON
-            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson task_definition "$TASK_DEFINITION" --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" '{
-              "family": "$TASK_DEFINITION_FAMILY",
+            NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson task_definition "$TASK_DEFINITION" --arg image "$DOCKER_HUB_USERNAME/makinode-app-circle:$CIRCLE_SHA1" --arg family "$TASK_DEFINITION_FAMILY" '{
+              "family": $family,
               "taskRoleArn": ($task_definition.taskRoleArn // ""),
               "executionRoleArn": ($task_definition.executionRoleArn // ""),
               "networkMode": ($task_definition.networkMode // "awsvpc"),
