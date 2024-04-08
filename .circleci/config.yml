@@ -72,7 +72,7 @@ jobs:
           name: Update ECS Service
           command: |
             # Get the task definition ARN
-            TASK_DEFINITION_ARN=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION --query 'taskDefinition.taskDefinitionArn' --output text)
+            TASK_DEFINITION_ARN=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
 
             # Update the ECS service with the new task definition
             aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $TASK_DEFINITION_ARN
