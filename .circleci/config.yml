@@ -27,8 +27,8 @@ jobs:
           name: Update ECS Task Definition
           command: |
             # Get the latest revision of the task definition
-            # LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix $ECS_TASK_DEFINITION_FAMILY --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
-            LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix $ECS_TASK_DEFINITION_FAMILY --sort-order DESCENDING --max-items 1 | jq -r '.taskDefinitionArns[0]')
+            # LATEST_REVISION=$(aws ecs list-task-definitions --family-prefix makinode-app-task --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
+            LATEST_REVISION=$(aws ecs list-task-definitions --family makinode-app-task --sort-order DESCENDING --max-items 1 | jq -r '.taskDefinitionArns[0]')
 
             # Download the current task definition
             TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $LATEST_REVISION)
@@ -45,8 +45,8 @@ jobs:
           name: Update ECS Service
           command: |
             # Update the ECS service with the new task definition
-            aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --task-definition $LATEST_REVISION
-            aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME
+            aws ecs update-service --cluster makinode-app-cluster --service makinode-app-service --task-definition $LATEST_REVISION
+            aws ecs wait services-stable --cluster makinode-app-cluster --services makinode-app-service
 
 workflows:
   build-and-push:
