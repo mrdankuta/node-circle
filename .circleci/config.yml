@@ -67,7 +67,7 @@ jobs:
             # Register the updated task definition
             aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEFINITION"
 
-      # Update ECS Service
+      # Update ECS Service - Why not
       - run:
           name: Update ECS Service
           command: |
